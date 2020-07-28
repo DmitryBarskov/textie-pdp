@@ -1,4 +1,4 @@
-# 02. User authentication
+# 02. User registration
 
 ## Create user model
 
