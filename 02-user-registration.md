@@ -119,6 +119,19 @@ json.email user.email
 json.fullName user.full_name
 ```
 
+### Create a route
+
+```ruby
+# file: config/routes.rb
+Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      resources :users, only: %i[create]
+    end
+  end
+end
+```
+
 ## Test it
 
 Run `bundle exec rails server` to start your application.
