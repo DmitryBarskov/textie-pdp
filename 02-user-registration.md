@@ -100,10 +100,13 @@ json.fullName user.full_name
 
 ### Create a route
 
+ Here we add the default format for our `/api/*` route.
+ So it's JSON by default when no `Content-Type` header provided.
+
 ```ruby
 # file: config/routes.rb
 Rails.application.routes.draw do
-  namespace :api do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       resources :users, only: %i[create]
     end
@@ -117,7 +120,6 @@ Run `bundle exec rails server` to start your application.
 In another terminal session run
 ```bash
 curl -X POST localhost:3000/api/v1/users \
-    -H "Content-Type: application/json" \
     -d '{"user":{"email":"user@example.com","password":"123456"}}'
 ```
 
@@ -129,7 +131,6 @@ You should see unformatted JSON output.
 Create an invalid user. You can omit email address/password, use invalid/the same email address.
 ```bash
 curl -X POST localhost:3000/api/v1/users \
-    -H "Content-Type: application/json" \
     -d '{"user":{"email":"user@example.com"}}'
 ```
 
