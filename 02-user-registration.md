@@ -48,7 +48,6 @@ DATABASE_URL=postgresql://localhost:5432/textie_development
 ## Create user model
 
 Generate `models/user.rb` and a migration file.
-
 ```bash
 rails g model User email:citext:uniq full_name password_digest:string
 ```
@@ -114,7 +113,6 @@ end
 Create file `app/views/api/v1/users/show.json.jbuilder` with following content.
 User is a method we exposed in controller.
 Here we create a JSON document with fields `id`, `email` and `fullName` and corresponding `user` attributes.
-
 ```ruby
 json.id user.id
 json.email user.email
@@ -122,3 +120,28 @@ json.fullName user.full_name
 ```
 
 ## Test it
+
+Run `bundle exec rails server` to start your application.
+In another terminal session run
+```bash
+curl -X POST localhost:3000/api/v1/users \
+    -H "Content-Type: application/json" \
+    -d '{"user":{"email":"user@example.com","password":"123456"}}'
+```
+
+You should see unformatted JSON output.
+```json
+{"id":1,"email":"user@example.com","fullName":""}
+```
+
+Create an invalid user. You can omit email address/password, use invalid/the same email address.
+```bash
+curl -X POST localhost:3000/api/v1/users \
+    -H "Content-Type: application/json" \
+    -d '{"user":{"email":"user@example.com"}}'
+```
+
+You should see errors as a response.
+```json
+{"password":["can't be blank"],"email":["has already been taken"]}
+```
