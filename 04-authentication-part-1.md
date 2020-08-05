@@ -109,6 +109,8 @@ To create session we only call `LoginUser` interactor with email and password pa
 handle the errors of the result.
 Client will receive JWT as a response.
 
+## Creating interactors for logging in users
+
 Let's see `LoginUser` interactor. It's only aggregates other interactors.
 First, we need to find the user by given email, then we pass the found user to `AuthenticateByPassword` interactor, if authentication succeeds then we create JWT which is taken from `result` variable in our contorller.
 
@@ -195,3 +197,46 @@ class LoginUser
   end
 end
 ```
+
+## Recognizing user by JWT
+
+Create an interactor first.
+Here we have top level interactor definition.
+We want top-level interactors to be abstract and interactors in modules to be concrete.
+
+```ruby
+# file: app/interactors/recognize_user.rb
+class RecognizeUser
+  include Interactor::Organizer
+
+  organize RecognizeUser::AuthenticateByJwt
+end
+```
+
+In fact we have an interactor RecognizeUser which is just an alias for AuthenticateByJwt.
+
+
+```ruby
+# file: app/interactors/recognize_user/authenticate_by_jwt.rb
+class RecognizeUser
+  class AuthenticateByJwt
+    include Interactor
+
+    delegate :token, to: :context
+
+    def call
+      user_attributes = JwtCodec.new.decode(token)
+      fail! unless user_attributes
+      context.user = User.new(user_attributes)
+    end
+
+    private
+
+    def fail!
+      context.fail!(error: I18n.t("error.invalid_jwt"))
+    end
+  end
+end
+```
+
+# TODO
