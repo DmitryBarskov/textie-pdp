@@ -239,4 +239,10 @@ class RecognizeUser
 end
 ```
 
-# TODO
+Here we just use our JwtCodec class and fail the authentication process when it fails to decode jwt.
+
+## ApplicationController
+
+It is the base class for all our contorllers.
+We add filter `:authenticate_user!` that will run every time a controller receives a request. In the filter we just invoke our RecognizeUser interactor and handle its error.
+If it succeeds we set current_user attribute and expose it with attr_reader. So all the controllers can access current_user.
