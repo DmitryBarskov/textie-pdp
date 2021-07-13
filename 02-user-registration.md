@@ -10,13 +10,15 @@ default: &default
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  url: <%= ENV.fetch("DATABASE_URL") %>
+  url: <%= ENV["DATABASE_URL"] %>
 
 development:
   <<: *default
+  database: <%= ENV.fetch("DB_NAME", "#{Rails.root.basename}_dev") %>
 
 test:
   <<: *default
+  database: <%= ENV.fetch("DB_NAME", "#{Rails.root.basename}_test") %>
 
 production:
   <<: *default
@@ -121,10 +123,13 @@ json.fullName user.full_name
 
 ### Create a route
 
+Here we add the default format for our `/api/*` route.
+So it's JSON by default when no `Content-Type` header provided.
+
 ```ruby
 # file: config/routes.rb
 Rails.application.routes.draw do
-  namespace :api do
+  namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
       resources :users, only: %i[create]
     end
